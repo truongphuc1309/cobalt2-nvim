@@ -17,7 +17,7 @@ With lazy.nvim:
 
 ```lua
 {
-  "yourname/cobalt2-nvim",
+  "truongphuc1309/cobalt2-nvim",
   name = "cobalt2",
   priority = 1000,
   opts = {},
