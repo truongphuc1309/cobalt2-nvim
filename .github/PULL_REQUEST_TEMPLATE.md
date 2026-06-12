@@ -16,4 +16,5 @@
 
 ## Checklist
 
-- [ ] I've read the [CONTRIBUTING](https://github.com/LazyVim/LazyVim/blob/main/CONTRIBUTING.md) guidelines.
+- [ ] I've read the CONTRIBUTING guidelines.
+- [ ] I've run `nvim -l tests/minit.lua --minitest`.

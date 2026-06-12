@@ -1,84 +1,42 @@
-local Config = require("tokyonight.config")
-local Init = require("tokyonight")
+local Config = require("cobalt2.config")
 
 before_each(function()
   vim.o.background = "dark"
   vim.cmd.colorscheme("default")
   Config.setup()
-  Init.styles = {}
+  require("cobalt2.util").cache.clear()
 end)
 
-it("did prper init", function()
-  assert.same({}, Init.styles)
+it("initializes defaults", function()
   assert.same("default", vim.g.colors_name)
   assert.same("dark", vim.o.background)
 end)
 
-describe("loading respects vim.o.background", function()
-  it("= dark", function()
-    vim.o.background = "dark"
-    vim.cmd.colorscheme("tokyonight")
-    assert.same("dark", vim.o.background)
-    assert.same("tokyonight-moon", vim.g.colors_name)
-  end)
+it("loads the single cobalt2 colorscheme", function()
+  vim.o.background = "light"
+  vim.cmd.colorscheme("cobalt2")
+  assert.same("dark", vim.o.background)
+  assert.same("cobalt2", vim.g.colors_name)
+end)
 
-  it("= light", function()
-    vim.o.background = "light"
-    vim.cmd.colorscheme("tokyonight")
-    assert.same("light", vim.o.background)
-    assert.same("tokyonight-day", vim.g.colors_name)
-  end)
+it("supports setup before loading", function()
+  require("cobalt2").setup({ plugins = { all = false, auto = false } })
+  vim.cmd.colorscheme("cobalt2")
+  assert.same("cobalt2", vim.g.colors_name)
+end)
 
-  it("= dark with night", function()
-    vim.o.background = "dark"
-    vim.cmd.colorscheme("tokyonight-night")
-    assert.same("dark", vim.o.background)
-    assert.same("tokyonight-night", vim.g.colors_name)
-  end)
+it("loads statusline integrations", function()
+  assert.is_table(require("lualine.themes.cobalt2"))
+  assert.is_table(require("lightline.colorscheme.cobalt2"))
+  assert.is_table(require("barbecue.theme.cobalt2"))
+end)
 
-  it("= dark with day", function()
-    vim.o.background = "dark"
-    vim.cmd.colorscheme("tokyonight-day")
-    assert.same("light", vim.o.background)
-    assert.same("tokyonight-day", vim.g.colors_name)
-  end)
+it("uses the cobalt2 cache key", function()
+  local cache = require("cobalt2.util").cache
+  cache.write("cobalt2", { inputs = { theme = "cobalt2" }, groups = { Normal = { fg = "#ffffff" } } })
+  local data = cache.read("cobalt2")
 
-  it("= light with night", function()
-    vim.o.background = "light"
-    vim.cmd.colorscheme("tokyonight-night")
-    assert.same("dark", vim.o.background)
-    assert.same("tokyonight-night", vim.g.colors_name)
-  end)
-
-  it("= light with day", function()
-    vim.o.background = "light"
-    vim.cmd.colorscheme("tokyonight-day")
-    assert.same("light", vim.o.background)
-    assert.same("tokyonight-day", vim.g.colors_name)
-  end)
-
-  it(" and switches to light", function()
-    vim.o.background = "dark"
-    vim.cmd.colorscheme("tokyonight-night")
-    vim.o.background = "light"
-    assert.same("light", vim.o.background)
-    assert.same("tokyonight-day", vim.g.colors_name)
-  end)
-
-  it(" and switches to dark", function()
-    vim.o.background = "light"
-    vim.cmd.colorscheme("tokyonight")
-    vim.o.background = "dark"
-    assert.same("dark", vim.o.background)
-    assert.same("tokyonight-moon", vim.g.colors_name)
-  end)
-
-  it(" and remembers dark", function()
-    vim.o.background = "dark"
-    vim.cmd.colorscheme("tokyonight-night")
-    vim.o.background = "light"
-    vim.o.background = "dark"
-    assert.same("dark", vim.o.background)
-    assert.same("tokyonight-night", vim.g.colors_name)
-  end)
+  assert.same("cobalt2", data.inputs.theme)
+  assert.same("#ffffff", data.groups.Normal.fg)
+  assert.is_true(cache.file("cobalt2"):find("cobalt2%-cobalt2%.json") ~= nil)
 end)

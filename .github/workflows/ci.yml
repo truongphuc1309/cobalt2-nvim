@@ -6,9 +6,13 @@ on:
   pull_request:
 
 jobs:
-  ci:
-    uses: folke/github/.github/workflows/ci.yml@main
-    secrets: inherit
-    with:
-      plugin: tokyonight.nvim
-      repo: folke/tokyonight.nvim
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: rhysd/action-setup-vim@v1
+        with:
+          neovim: true
+          version: stable
+      - run: nvim --version
+      - run: nvim -l tests/minit.lua --minitest
